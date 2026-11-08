@@ -1,7 +1,7 @@
 # Worker AI local và triển khai
 
 Hướng dẫn cho thành viên trên VM nằm tại [guides/HUONG-DAN-WORKER-MAY-MOI.md](guides/HUONG-DAN-WORKER-MAY-MOI.md).
-Tất cả dùng `bachcp10/neon-hub-worker:1.2.0`, chỉ cần ID và địa chỉ server; model AI chuyển riêng.
+Tất cả dùng `bachcp10/neon-hub-worker:1.2.0`, chỉ cần ID và địa chỉ server; model AI tải trực tiếp bằng curl trong hướng dẫn.
 Phần giám sát có trong [hướng dẫn chi tiết](guides/HUONG-DAN-WORKER-CHI-TIET.md).
 
 ## Thử tại Windows/WSL
@@ -27,3 +27,14 @@ Script chạy server và một worker local, dừng worker còn lại khi đổi
 - Ảnh hoàn tất được gửi về API và lưu ở kho chung của server.
 
 Không còn cần ba gói handoff cũ chứa các bản sao model. Bản gốc và mã nguồn dùng chung được giữ ở các thư mục trên.
+
+## Worker riêng nối tới server VM và cập nhật
+
+Worker 1.1 hiện có cấu hình tại `D:\neon-image-hub\data\worker-1.1`,
+trong WSL là `/mnt/d/neon-image-hub/data/worker-1.1`. Các script start ở phần trên
+bật server local để thử nghiệm, không dùng để bật riêng worker 1.1 này.
+Trong terminal WSL, vào thư mục cấu hình rồi `docker compose up -d` hoặc `docker compose stop`.
+
+Xem hướng dẫn chính để sửa ID, server_url, AI_MODEL, WORKER_CPUS, WORKER_MEMORY và threads.
+Xem [cập nhật](guides/NANG-CAP-1.2.0-KHONG-TOKEN.md) để pull image, nâng tag và Git pull.
+Chỉ sửa tài liệu thì không cần cập nhật image hoặc dừng worker đang chạy.

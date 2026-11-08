@@ -18,8 +18,23 @@ Các tài liệu chính:
 - [Nâng cấp máy đã cài bản cũ](guides/NANG-CAP-1.2.0-KHONG-TOKEN.md).
 
 Image có lệnh setup tạo Compose và cấu hình tại VM; không cần chép ZIP dự án.
-Model AI nằm ngoài image và cần chuyển một lần vào thư mục models/ của worker.
+Model AI nằm ngoài image; dùng lệnh curl trong hướng dẫn worker để tải trực tiếp vào models/ trên VM.
+Không cần gửi model từ Windows, không cần clone code để chạy image đã phát hành.
 Kho model gốc trên máy phát triển: `D:\codex-neon-local\models`.
+
+## Bật/tắt, đổi cấu hình và cập nhật
+
+Trong đúng thư mục triển khai: `docker compose up -d` để bật, `docker compose stop` để tắt.
+`start` chỉ bật container đã có; `up -d` không tạo trùng bộ container và áp dụng image/.env đã đổi.
+Không pull lại mỗi lần bật. Khi có image mới: pull rồi up; khi sửa file JSON bind mount,
+tạo lại đúng dịch vụ bằng `up -d --force-recreate` theo hướng dẫn.
+
+- [Server: cài mới, IP/cổng, thêm ID/model được phép](guides/HUONG-DAN-SERVER-MAY-MOI.md).
+- [Worker: ID, server_url, model, RAM, CPU, threads, log và WSL](guides/HUONG-DAN-WORKER-MAY-MOI.md).
+- [Cập nhật: Docker pull, Git pull, backup, nâng cấp và giao diện bind mount](guides/NANG-CAP-1.2.0-KHONG-TOKEN.md).
+
+Image hiện dùng tag 1.2.0; cập nhật tài liệu trên GitHub không tự tạo image mới.
+Web/nginx được xuất ra VM và bind mount nên pull API không tự thay phần giao diện.
 
 ## Cấu trúc còn sử dụng
 
@@ -42,6 +57,12 @@ giữ cấu hình worker/agent local; tệp cũ có trường token worker vẫn
 server 1.2.0 không dùng nó. Không công khai các file chứa khóa quản trị/giám sát.
 
 ## Chạy thử tại máy phát triển Windows/WSL
+
+Phần này bật **server local để phát triển**, khác với chỉ chạy worker trong WSL nối tới server trên VM.
+Worker 1.1 đang dùng trên máy phát triển có cấu hình riêng ở
+`D:\neon-image-hub\data\worker-1.1` (WSL: `/mnt/d/neon-image-hub/data/worker-1.1`),
+không nằm trong Git và không được tạo tự động khi clone trên máy khác.
+Muốn quản lý riêng worker đó, vào thư mục cấu hình của nó rồi chạy Compose; không chạy start.ps1 của repo.
 
 Trong PowerShell tại `D:\neon-image-hub`:
 
@@ -66,7 +87,7 @@ Docker Engine/cache vẫn ở WSL, chưa chuyển toàn bộ sang ổ D.
 - Kho ảnh/CSDL: `data/hub/images/` và `data/hub/hub.sqlite3`.
 
 Ảnh do worker gửi qua API được lưu cùng bản ghi CSDL và tự hiện lên web. Ảnh chép
-bằng WinSCP cần nhập metadata; xem [công cụ nhập kho cũ](exports/gallery-import/README.md).
+bằng WinSCP cần nhập metadata; công cụ nhập kho cũ ở `exports/gallery-import/` trên máy phát triển, không có trong bản clone GitHub.
 
 ## Kiểm tra và đóng gói
 

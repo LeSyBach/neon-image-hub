@@ -9,6 +9,10 @@ trước khi bạn thực hiện bước 4. Trong ví dụ tên VM dùng neon-wo
 đặt neon-worker-3 hoặc neon-worker-4. Mỗi thành viên làm toàn bộ tài liệu trên VM của mình.
 Các giá trị có chữ IP_... hoặc DUONG-DAN-THAT là chỗ cần thay, không phải địa chỉ có thật.
 
+Muốn thao tác gọn từng bước, đọc [hướng dẫn worker chính](HUONG-DAN-WORKER-MAY-MOI.md).
+Tài liệu chính đã có bảng sửa ID/IP/model/CPU/RAM/threads, tải curl, bật/tắt, pull image và worker WSL.
+Tài liệu này giải thích thêm VM, mạng, agent Beszel và xử lý lỗi. Không cài lại cả hai lần.
+
 ## 1. Kiểm tra VM hiện có hoặc tạo VM Ubuntu mới
 
 Thực hiện trên máy Windows của thành viên phụ trách.
@@ -116,18 +120,21 @@ Thay IP_TAILSCALE_SERVER bằng IP thật của server trước khi chạy:
 ```bash
 WORKER_ID=2.1
 SERVER_URL="http://IP_TAILSCALE_SERVER:8081"
+NEON_CPUS=$(nproc)
+if [ "$NEON_CPUS" -gt 4 ]; then NEON_CPUS=4; fi
 sudo docker run --rm --network none \
   --user "$(id -u):$(id -g)" \
   -v "$PWD:/setup" --entrypoint python3 \
   bachcp10/neon-hub-worker:1.2.0 \
   -m setupkit worker --output /setup --worker-id "$WORKER_ID" \
-  --server-url "$SERVER_URL" --cpus 4
+  --server-url "$SERVER_URL" --cpus "$NEON_CPUS"
 ```
 
 Không có yêu cầu nhập token.
 Thư mục đích phải trống ở lần đầu; công cụ giữ nguyên và từ chối ghi đè cấu hình đã có.
 Lệnh tạo compose.yaml, .env, worker-settings.json, models/ và worker-state/ ngay trên VM.
-AI_MODEL tự chọn theo ID, threads và giới hạn CPU đặt 4, WORKER_MEMORY đặt 5g.
+AI_MODEL tự chọn theo ID; threads và giới hạn CPU lấy số CPU VM, tối đa 4 trong lệnh mẫu.
+WORKER_MEMORY đặt 5g cho VM khởi điểm 8 GB RAM. VM chỉ có 2 CPU thì không đặt WORKER_CPUS=4/8.
 Nếu VM có tài nguyên khác, điều chỉnh như bước 7 trước khi chạy AI.
 
 Kiểm tra trong **Ubuntu VM worker**:
@@ -251,6 +258,9 @@ PY
 
 Khi dùng số vCPU khác, đổi threads và WORKER_CPUS cho phù hợp.
 Chọn model bằng AI_MODEL, không cần thay steps/sampler trong JSON.
+Xem phần **Sửa cấu hình worker** trong [hướng dẫn chính](HUONG-DAN-WORKER-MAY-MOI.md)
+để đổi ID, server_url, CPU, RAM, threads và kiểm tra cú pháp. Sau sửa JSON/.env, dùng
+`sudo docker compose up -d --force-recreate worker` để nạp lại cấu hình; không chỉ dùng start/restart.
 
 ## 8. Kiểm tra server trước khi chạy AI
 
@@ -287,6 +297,8 @@ Không cần đăng nhập Docker Hub, không cần build, không cần pip inst
 `pull` tải image; `up -d` mới tạo/chạy container.
 
 Kết quả cần thấy worker ready, không lặp lỗi xác thực, có nhận job khi server có việc.
+Worker ready chưa chứng minh server đã nhận: kiểm tra không có HTTP 403 và ID có heartbeat trên `/api/stats`.
+`Saved by server` xác nhận ảnh được lưu; log bước như 1/6 ở `worker-state/<job_id>.log`.
 Khi rảnh, worker xin việc; đang sinh ảnh vẫn gửi heartbeat; tạo xong gửi ảnh về server.
 Lần đầu có thể nhận ngay việc sinh nền dù chưa ai tìm kiếm. Thời gian sinh ảnh phải đo trên VM thật.
 
@@ -297,7 +309,8 @@ sudo docker compose logs -f worker
 ```
 
 Ctrl+C chỉ thoát màn hình xem log; container vẫn chạy.
-Quản trị server kiểm tra được ID của máy bạn chuyển `idle`/`busy`, số ảnh tăng sau khi lưu thành công.
+Quản trị server xem JSON `/api/stats`: ID của máy bạn phải chuyển `idle`/`busy`, số ảnh tăng sau khi lưu thành công.
+Giao diện kho ảnh hiện chưa có bảng quản trị hiển thị đầy đủ trạng thái tất cả worker/hàng đợi.
 
 ### Các file nằm ở đâu?
 
@@ -377,7 +390,7 @@ Nhờ quản trị kiểm tra Hub đã có CPU/RAM/đĩa của đúng VM này.
 Server cần truy cập agent cổng 45876 qua Tailscale, hoặc agent kết nối Hub 8090 theo phương thức đã cấu hình.
 Nguồn: [Beszel Agent](https://beszel.dev/guide/agent-installation), [LISTEN host:port](https://beszel.dev/guide/environment-variables).
 
-## 11. Đổi model, dừng, chạy lại
+## 11. Đổi model, bật/tắt và cập nhật
 
 Đổi model: mở .env, chỉ đổi AI_MODEL sang một trong hai tên đã hỗ trợ; bảo đảm file tương ứng vẫn có trong models/.
 Sau đó chạy trong **Ubuntu VM worker**:
@@ -421,6 +434,22 @@ sudo rm -- worker-state/pause
 
 Chỉ xóa đúng file marker pause khi muốn tiếp tục; không xóa pending.json hoặc cả worker-state để xử lý lỗi.
 Agent giám sát chạy riêng trong ~/neon-monitor; dừng worker không dừng agent.
+
+Bật hằng ngày có thể dùng `up -d`; start chỉ dùng khi container đã có và cấu hình không đổi.
+Để tải lại image rồi áp dụng:
+
+```bash
+cd ~/neon-worker
+sudo docker compose pull worker
+sudo docker compose up -d worker
+sudo docker compose ps -a
+sudo docker compose logs --tail 30 worker
+```
+
+Ưu tiên đợi ảnh đang làm xong; giữ model và worker-state. `pull` không tự sửa ID/IP/model/CPU/RAM,
+không tải lại trọng số AI, cũng không tự chạy image mới cho đến khi up.
+Nâng từ 1.0/1.1 hoặc đổi tag mới: làm theo [hướng dẫn cập nhật](README.md),
+không chạy lại setup lần đầu trong thư mục đang dùng.
 
 ## 12. Xử lý lỗi thường gặp
 

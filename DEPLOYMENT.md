@@ -13,3 +13,11 @@ Không cần các gói ZIP hoặc gói worker riêng của các phiên bản tr�
 
 Model gốc ở D:\codex-neon-local\models. Ảnh/CSDL trên máy phát triển ở data/hub/.
 Thư mục dist/dockerhub-1.2.0 chứa tài nguyên triển khai và xác minh bản mới nhất.
+
+## Vận hành sau khi cài
+
+- Bật/tắt trong đúng thư mục triển khai: `docker compose up -d` / `docker compose stop`.
+- Đổi ID/model/IP/CPU/RAM/threads: sửa file ngoài container, rồi tạo lại đúng dịch vụ theo hướng dẫn server/worker.
+- Pull image rồi up khi cần cập nhật; Git pull chỉ lấy code/tài liệu, không tự thay image đang chạy.
+- Hướng dẫn cập nhật đã có backup, nâng 1.0/1.1 lên 1.2.0, thay web/nginx bind mount và kiểm tra sau cập nhật.
+- Model tải bằng curl ngay trên VM worker; không bắt buộc chuyển file từ máy phát triển.
