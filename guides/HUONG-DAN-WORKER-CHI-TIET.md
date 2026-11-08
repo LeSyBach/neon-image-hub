@@ -137,43 +137,74 @@ cd ~/neon-worker
 ls -la
 ```
 
-Lệnh setup chỉ tạo cấu hình, chưa chạy worker AI. Bước tiếp theo là đặt model vào models/.
+Lệnh setup chỉ tạo cấu hình, chưa chạy worker AI. Bước tiếp theo là tải model vào models/.
 
-## 6. Chép model AI vào đúng thư mục
+## 6. Tải model AI trực tiếp bằng curl
 
-Model là file dữ liệu, không cần chạy trình cài. Chép ba tệp này vào `~/neon-worker/models/`:
+Chạy các lệnh dưới đây trong **terminal Ubuntu VM worker**, không chạy trên Windows.
+Không cần nhận file model qua WinSCP, không cần clone GitHub hoặc cài Git LFS.
 
-| Tệp | Dùng cho |
-|---|---|
-| sd_turbo-f16-q8_0.gguf | SD-Turbo |
-| DreamShaper8_LCM.safetensors | DreamShaper8 LCM |
-| taesd.safetensors | Bộ giải mã dùng chung cho hai lựa chọn trên |
+| Worker | Model mặc định | File cần tải |
+|---|---|---|
+| `2.1` và `4.1` | SD-Turbo | `sd_turbo-f16-q8_0.gguf` + `taesd.safetensors` |
+| `3.1` | DreamShaper8 LCM | `DreamShaper8_LCM.safetensors` + `taesd.safetensors` |
 
-Nguồn file có sẵn ở máy Windows của người phát triển: `D:\codex-neon-local\models` hoặc
-`D:\neon-image-hub\exports\worker-2.1\models`. Hai image Docker không chứa các trọng số này và không tự tải model.
+**Tất cả worker:** vào thư mục model và tải TAESD dùng chung:
 
-Nếu ba tệp đang nằm trong Downloads\models trên Windows thành viên, chạy **PowerShell Windows**:
+```bash
+mkdir -p ~/neon-worker/models
+cd ~/neon-worker/models
 
-```powershell
-scp "$env:USERPROFILE\Downloads\models\sd_turbo-f16-q8_0.gguf" ubuntu@IP_NAT_THAT_CUA_VM:~/neon-worker/models/
-scp "$env:USERPROFILE\Downloads\models\DreamShaper8_LCM.safetensors" ubuntu@IP_NAT_THAT_CUA_VM:~/neon-worker/models/
-scp "$env:USERPROFILE\Downloads\models\taesd.safetensors" ubuntu@IP_NAT_THAT_CUA_VM:~/neon-worker/models/
+curl -fL -C - --retry 3 -o taesd.safetensors \
+"https://huggingface.co/madebyollin/taesd/resolve/614f76814bbe30edbe2e627ace1c2234c81a2c0e/diffusion_pytorch_model.safetensors"
 ```
 
-Thay IP/path thật. Trong **Ubuntu VM worker**:
+Tên gốc trên nguồn tải là `diffusion_pytorch_model.safetensors`; lệnh lưu thành
+`taesd.safetensors`, đúng tên mà worker cần. Không đổi tên sau khi tải.
+
+**Worker `2.1` và `4.1`:** tải thêm SD-Turbo, khoảng 2 GB:
+
+```bash
+cd ~/neon-worker/models
+
+curl -fL -C - --retry 3 -o sd_turbo-f16-q8_0.gguf \
+"https://huggingface.co/Green-Sky/SD-Turbo-GGUF/resolve/19a31586d02d64a73b4419bc193b3ecfaf38e1f0/sd_turbo-f16-q8_0.gguf"
+```
+
+**Worker `3.1`:** tải thêm DreamShaper8 LCM, khoảng 2,13 GB:
+
+```bash
+cd ~/neon-worker/models
+
+curl -fL -C - --retry 3 -o DreamShaper8_LCM.safetensors \
+"https://huggingface.co/Lykon/dreamshaper-8-lcm/resolve/4645d8bc6a8e6b106d21606d63e8460cdad4f1a6/DreamShaper8_LCM.safetensors"
+```
+
+Chỉ tải **TAESD và một model đã chọn**, không bắt buộc tải cả ba file.
+Nếu đổi model sau này, tải thêm file tương ứng và đổi `AI_MODEL` trong `.env`.
+Nếu bị ngắt mạng, chạy lại đúng lệnh để tải tiếp phần còn thiếu (`-C -`).
+Chờ tải xong hoàn toàn, không có lỗi curl, rồi mới bật worker. Nếu file đã tải đủ thì bỏ qua lệnh đó.
+
+Kiểm tra và trở về thư mục chạy Docker:
 
 ```bash
 cd ~/neon-worker
 ls -lh models/
 ```
 
-Cần đúng tên, chữ hoa/thường; không để file thành `.part`, không lồng thêm `models/models/`.
-Có thể kiểm tra các hash trong `MODEL-SOURCES.json` bằng:
+TAESD khoảng 9,8 MB; cần thêm model chính khoảng 2 GB theo bảng trên.
+Giữ đúng tên file và chữ hoa/thường, không đặt lồng `models/models/`.
+Chỉ cần tải một lần; các lần bật worker sau không tải lại.
+Image Docker chứa chương trình chạy AI; những lệnh curl này tải riêng dữ liệu model vào VM.
+
+Có thể đối chiếu SHA256 với `MODEL-SOURCES.json`. Chỉ chạy lệnh cho file đã tải:
 
 ```bash
-sha256sum models/sd_turbo-f16-q8_0.gguf
-sha256sum models/DreamShaper8_LCM.safetensors
 sha256sum models/taesd.safetensors
+# Worker 2.1/4.1:
+sha256sum models/sd_turbo-f16-q8_0.gguf
+# Worker 3.1:
+sha256sum models/DreamShaper8_LCM.safetensors
 ```
 
 ## 7. Chọn model và tài nguyên
@@ -399,7 +430,7 @@ Agent giám sát chạy riêng trong ~/neon-monitor; dừng worker không dừng
 | Không có worker-settings.json | Làm bước 5 bằng image 1.2.0; không cần token worker. |
 | Curl server timeout | Kiểm tra Tailscale, IP server:8081, server đang chạy, bind và quyền mạng. |
 | 401/403 | Kiểm tra đúng ID/model và server đã cập nhật 1.2.0. |
-| Missing local model component | Đúng tên file, chữ hoa/thường, thư mục models/ và file đã chép đủ. |
+| Missing local model component | Đúng tên file, chữ hoa/thường, thư mục models/ và file đã tải đủ. |
 | OOMKilled / exit 137 | Kiểm tra RAM VM, WORKER_MEMORY và model; gửi log cho người phụ trách, không tăng giới hạn vượt RAM VM. |
 | Container báo thiếu CPU | Giảm WORKER_CPUS cho khớp vCPU VM; chỉnh threads tương ứng. |
 | Đã đổi model nhưng vẫn dùng cũ | Chạy `up -d` sau sửa .env; việc cũ đang khôi phục có thể hoàn tất trước việc mới. |

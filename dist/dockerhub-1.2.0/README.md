@@ -39,7 +39,8 @@ sudo docker run --rm --network none \
 ```
 
 Thay ID và IP bằng giá trị thật. Thư mục mới cần trống. Không có ô nhập token.
-Chép model vào models/ như trước. Chọn AI_MODEL trong .env nếu cần, rồi:
+Tải model trực tiếp bằng curl theo bước 3 trong [hướng dẫn worker](HUONG-DAN-WORKER-MAY-MOI.md).
+Worker 3.1 dùng DreamShaper8 LCM; 2.1/4.1 dùng SD-Turbo. Chọn AI_MODEL trong .env nếu cần, rồi:
 
 ```bash
 sudo docker compose pull

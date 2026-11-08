@@ -60,27 +60,63 @@ Lệnh tự tạo các file sau, không hỏi token:
 Chỉ làm bước khởi tạo này **một lần** trong thư mục trống. Không chạy lại để bật worker hằng ngày.
 Python trong câu lệnh chạy bên trong image Docker.
 
-## 3. Chép model
+## 3. Tải model trực tiếp bằng curl
 
-Người giữ file model gửi cho các thành viên. File có sẵn trên máy phát triển tại:
+Chạy các lệnh dưới đây trong **terminal Ubuntu VM worker**, không chạy trên Windows.
+Không cần nhận file model qua WinSCP, không cần clone GitHub hoặc cài Git LFS.
 
-```text
-D:\codex-neon-local\models\
+| Worker | Model mặc định | File cần tải |
+|---|---|---|
+| `2.1` và `4.1` | SD-Turbo | `sd_turbo-f16-q8_0.gguf` + `taesd.safetensors` |
+| `3.1` | DreamShaper8 LCM | `DreamShaper8_LCM.safetensors` + `taesd.safetensors` |
+
+**Tất cả worker:** vào thư mục model và tải TAESD dùng chung:
+
+```bash
+mkdir -p ~/neon-worker/models
+cd ~/neon-worker/models
+
+curl -fL -C - --retry 3 -o taesd.safetensors \
+"https://huggingface.co/madebyollin/taesd/resolve/614f76814bbe30edbe2e627ace1c2234c81a2c0e/diffusion_pytorch_model.safetensors"
 ```
 
-Dùng WinSCP chép file vào **VM worker**, thư mục:
+Tên gốc trên nguồn tải là `diffusion_pytorch_model.safetensors`; lệnh lưu thành
+`taesd.safetensors`, đúng tên mà worker cần. Không đổi tên sau khi tải.
 
-```text
-/root/neon-worker/models/
+**Worker `2.1` và `4.1`:** tải thêm SD-Turbo, khoảng 2 GB:
+
+```bash
+cd ~/neon-worker/models
+
+curl -fL -C - --retry 3 -o sd_turbo-f16-q8_0.gguf \
+"https://huggingface.co/Green-Sky/SD-Turbo-GGUF/resolve/19a31586d02d64a73b4419bc193b3ecfaf38e1f0/sd_turbo-f16-q8_0.gguf"
 ```
 
-| Model chọn | File cần chép |
-|---|---|
-| SD-Turbo | `sd_turbo-f16-q8_0.gguf` và `taesd.safetensors` |
-| DreamShaper8 LCM | `DreamShaper8_LCM.safetensors` và `taesd.safetensors` |
+**Worker `3.1`:** tải thêm DreamShaper8 LCM, khoảng 2,13 GB:
 
-Có thể chép cả ba file để đổi model dễ hơn. Giữ nguyên tên file; đặt trực tiếp trong models/, không lồng thêm models/models/.
-File model chỉ cần chép một lần. Đây là dữ liệu AI; code chương trình đã nằm trong image.
+```bash
+cd ~/neon-worker/models
+
+curl -fL -C - --retry 3 -o DreamShaper8_LCM.safetensors \
+"https://huggingface.co/Lykon/dreamshaper-8-lcm/resolve/4645d8bc6a8e6b106d21606d63e8460cdad4f1a6/DreamShaper8_LCM.safetensors"
+```
+
+Chỉ tải **TAESD và một model đã chọn**, không bắt buộc tải cả ba file.
+Nếu đổi model sau này, tải thêm file tương ứng và đổi `AI_MODEL` trong `.env`.
+Nếu bị ngắt mạng, chạy lại đúng lệnh để tải tiếp phần còn thiếu (`-C -`).
+Chờ tải xong hoàn toàn, không có lỗi curl, rồi mới bật worker. Nếu file đã tải đủ thì bỏ qua lệnh đó.
+
+Kiểm tra và trở về thư mục chạy Docker:
+
+```bash
+cd ~/neon-worker
+ls -lh models/
+```
+
+TAESD khoảng 9,8 MB; cần thêm model chính khoảng 2 GB theo bảng trên.
+Giữ đúng tên file và chữ hoa/thường, không đặt lồng `models/models/`.
+Chỉ cần tải một lần; các lần bật worker sau không tải lại.
+Image Docker chứa chương trình chạy AI; những lệnh curl này tải riêng dữ liệu model vào VM.
 
 ## 4. Chạy worker
 
@@ -124,7 +160,7 @@ docker compose ps
 docker compose logs --tail 30 worker
 ```
 
-Không pull lại, không setup lại, không chép lại model mỗi lần bật.
+Không pull lại, không setup lại, không tải lại model mỗi lần bật.
 Nếu đã dùng `docker compose down` thì bật lại bằng `docker compose up -d`.
 
 ## Đổi model khi cần
