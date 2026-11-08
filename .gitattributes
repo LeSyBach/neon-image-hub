@@ -1,0 +1,5 @@
+* text=auto eol=lf
+models/*.gguf filter=lfs diff=lfs merge=lfs -text
+models/*.safetensors filter=lfs diff=lfs merge=lfs -text
+*.zip binary
+worker/runtime/** -text

@@ -1,0 +1,36 @@
+# Private configuration and local state
+.env
+.env.*
+!.env.example
+.credentials/
+worker-settings.json
+worker-state/
+.wsl-keepalive.json
+data/
+logs/
+backups/
+.tools/
+test-results/
+exports/
+
+# Python/cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Keep only the current public release assets
+dist/*
+!dist/dockerhub-1.2.0/
+
+# Keep the three requested model weights and their notices
+models/*
+!models/sd_turbo-f16-q8_0.gguf
+!models/DreamShaper8_LCM.safetensors
+!models/taesd.safetensors
+!models/README.md
+!models/notices/
+
+*.tmp
+*.part
+*.before-*

@@ -1,0 +1,22 @@
+# Sequential local validation of model B. Stop/pause worker-local first on a
+# memory-limited host. This does not represent a second physical machine.
+services:
+  worker-b-local:
+    image: neon-hub-worker:local
+    profiles: [local-worker-b]
+    restart: unless-stopped
+    stop_grace_period: 35s
+    depends_on:
+      api:
+        condition: service_healthy
+    cpus: 6
+    mem_limit: 5g
+    memswap_limit: 5g
+    volumes:
+      - ./.credentials/worker-b-local.json:/config/worker.json:ro
+      - ${NEON_MODELS_DIR:-/mnt/d/codex-neon-local/models}:/models:ro
+      - ./data/worker-3.1:/state
+    logging:
+      options:
+        max-size: 5m
+        max-file: '2'

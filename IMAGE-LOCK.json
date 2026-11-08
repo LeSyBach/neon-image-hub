@@ -1,0 +1,74 @@
+[
+  {
+    "image": "neon-hub-api:local",
+    "id": "sha256:ea252e3c7d2a72f9c383adac99e4ae0c5dee4484623acd81580082e102819e44",
+    "digests": [
+      "bachcp10/neon-hub-api@sha256:ea252e3c7d2a72f9c383adac99e4ae0c5dee4484623acd81580082e102819e44",
+      "neon-hub-api@sha256:ea252e3c7d2a72f9c383adac99e4ae0c5dee4484623acd81580082e102819e44"
+    ]
+  },
+  {
+    "image": "nginx:stable-alpine",
+    "id": "sha256:0e52bd054126cdc040b1276c0af347aeb02a41b9cfe305d6094767ac30e97949",
+    "digests": [
+      "nginx@sha256:0e52bd054126cdc040b1276c0af347aeb02a41b9cfe305d6094767ac30e97949"
+    ]
+  },
+  {
+    "image": "binwiederhier/ntfy:latest",
+    "id": "sha256:fb48c413eb11d50339962b5d62cddce0f800e7f77c626d638a7c20cb7e9c4465",
+    "digests": [
+      "binwiederhier/ntfy@sha256:fb48c413eb11d50339962b5d62cddce0f800e7f77c626d638a7c20cb7e9c4465"
+    ]
+  },
+  {
+    "image": "henrygd/beszel:0.21.1",
+    "id": "sha256:8514a69d9bbbcb74f371a3205561ee231fc0289739cea64e8131f341d695b770",
+    "digests": [
+      "henrygd/beszel@sha256:8514a69d9bbbcb74f371a3205561ee231fc0289739cea64e8131f341d695b770"
+    ]
+  },
+  {
+    "image": "henrygd/beszel-agent:0.21.1",
+    "id": "sha256:cb6868012964d7a68debaa2c84bb72285e5f08531e81f506bd4c493bf052e41c",
+    "digests": [
+      "henrygd/beszel-agent@sha256:cb6868012964d7a68debaa2c84bb72285e5f08531e81f506bd4c493bf052e41c"
+    ]
+  },
+  {
+    "image": "neon-hub-worker:local",
+    "id": "sha256:fba6cea4e130a734306ffb9f47fc8bc2d8f13046d0b82486f9a5ea370cc60f44",
+    "digests": [
+      "bachcp10/neon-hub-worker@sha256:fba6cea4e130a734306ffb9f47fc8bc2d8f13046d0b82486f9a5ea370cc60f44",
+      "neon-hub-worker@sha256:fba6cea4e130a734306ffb9f47fc8bc2d8f13046d0b82486f9a5ea370cc60f44"
+    ]
+  },
+  {
+    "image": "bachcp10/neon-hub-api:1.1.0",
+    "id": "sha256:e9a39a18de9ad0d609bfa722c9acc9b89f50c271475e69af5b30cdce67b385e5",
+    "digests": [
+      "bachcp10/neon-hub-api@sha256:e9a39a18de9ad0d609bfa722c9acc9b89f50c271475e69af5b30cdce67b385e5"
+    ]
+  },
+  {
+    "image": "bachcp10/neon-hub-worker:1.1.0",
+    "id": "sha256:e6f0d0a84a2250391468a5b9a90155af8e811a6af08f7a474b667b0468fe9299",
+    "digests": [
+      "bachcp10/neon-hub-worker@sha256:e6f0d0a84a2250391468a5b9a90155af8e811a6af08f7a474b667b0468fe9299"
+    ]
+  },
+  {
+    "image": "bachcp10/neon-hub-api:1.2.0",
+    "id": "sha256:0da045e9f543d0064def4b075fd4d4885373dea5c8c110010b95fa0260b69a3d",
+    "digests": [
+      "bachcp10/neon-hub-api@sha256:0da045e9f543d0064def4b075fd4d4885373dea5c8c110010b95fa0260b69a3d"
+    ]
+  },
+  {
+    "image": "bachcp10/neon-hub-worker:1.2.0",
+    "id": "sha256:5d986938bab2050db9da81eb2fa1545c5e45aaa93837100498d4434f7dafc7b2",
+    "digests": [
+      "bachcp10/neon-hub-worker@sha256:5d986938bab2050db9da81eb2fa1545c5e45aaa93837100498d4434f7dafc7b2"
+    ]
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "version": "1.2.0",
+  "architecture": "linux/amd64",
+  "bootstrap_from_image": true,
+  "worker_token_required": false,
+  "images": {
+    "bachcp10/neon-hub-api:1.2.0": {
+      "digest": "sha256:0da045e9f543d0064def4b075fd4d4885373dea5c8c110010b95fa0260b69a3d",
+      "anonymous_pull": true
+    },
+    "bachcp10/neon-hub-worker:1.2.0": {
+      "digest": "sha256:5d986938bab2050db9da81eb2fa1545c5e45aaa93837100498d4434f7dafc7b2",
+      "anonymous_pull": true
+    }
+  },
+  "private_credentials_in_images": false,
+  "model_weights_in_images": false
+}

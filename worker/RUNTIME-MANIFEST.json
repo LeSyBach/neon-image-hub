@@ -1,0 +1,190 @@
+{
+  "release": "master-1039-290148d",
+  "files": [
+    {
+      "file": "ggml.txt",
+      "size": 1078,
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d"
+    },
+    {
+      "file": "libggml-base.so",
+      "size": 996824,
+      "sha256": "4274640ad0e661d4427e8624f8f93e12efc0667b0b9a79a8a143d6554dc24064"
+    },
+    {
+      "file": "libggml-base.so.0",
+      "size": 996824,
+      "sha256": "4274640ad0e661d4427e8624f8f93e12efc0667b0b9a79a8a143d6554dc24064"
+    },
+    {
+      "file": "libggml-base.so.0.27.0",
+      "size": 996824,
+      "sha256": "4274640ad0e661d4427e8624f8f93e12efc0667b0b9a79a8a143d6554dc24064"
+    },
+    {
+      "file": "libggml-cpu-alderlake.so",
+      "size": 1296000,
+      "sha256": "fbcfaede79339842a9be26f505368472260d47d48270f9c48c5bc955e4c19a0f"
+    },
+    {
+      "file": "libggml-cpu-cannonlake.so",
+      "size": 1402608,
+      "sha256": "36c3c33bb84c959ed1926c0a4823a025afb72140a59d5af5c360b46a4c06d607"
+    },
+    {
+      "file": "libggml-cpu-cascadelake.so",
+      "size": 1410504,
+      "sha256": "5a2c8dc6d80f4813c649bbce34bfd53a105651f21b5a8d4b404b1efc866c95c4"
+    },
+    {
+      "file": "libggml-cpu-cooperlake.so",
+      "size": 1410504,
+      "sha256": "35f12664ccb3d629936db6394c21120ceab761c1e9e7eefe8b277a7d90769af2"
+    },
+    {
+      "file": "libggml-cpu-haswell.so",
+      "size": 1300096,
+      "sha256": "b4796717efed7a30d9c69810ff9fa94d2c2ee96d5579ef7c60854ea09bbfb813"
+    },
+    {
+      "file": "libggml-cpu-icelake.so",
+      "size": 1410504,
+      "sha256": "ee274be9e9ac7d85d2e643fb5b9565841937e144a272251a0e96692ff33fc440"
+    },
+    {
+      "file": "libggml-cpu-ivybridge.so",
+      "size": 1224696,
+      "sha256": "241896202b553c8d13bb59d5fdac5ef6b19debee42daeb817719d5265d750e3b"
+    },
+    {
+      "file": "libggml-cpu-piledriver.so",
+      "size": 1224696,
+      "sha256": "5b31f8f794ecfccbc74ca0bcd420d5aa342e57911e1c94f4ba4526be3d68a094"
+    },
+    {
+      "file": "libggml-cpu-sandybridge.so",
+      "size": 1245336,
+      "sha256": "b8544534833691b420acec4e6844ab8f9a34af1d677e5bb2bc25a7ccdbdbe302"
+    },
+    {
+      "file": "libggml-cpu-sapphirerapids.so",
+      "size": 1652192,
+      "sha256": "e3dbbc869de2688a7ba208d558ac6143afefcae62ef35253db03d8af9dec8e7c"
+    },
+    {
+      "file": "libggml-cpu-skylakex.so",
+      "size": 1402608,
+      "sha256": "0e145885a9a6283969758a2917f9f9977d850ede55963edf17bd8235ed3c6dc5"
+    },
+    {
+      "file": "libggml-cpu-sse42.so",
+      "size": 1011088,
+      "sha256": "06d897148278e266bfa31702cc9f1e480e006de78135d73177703ff56bb02e5e"
+    },
+    {
+      "file": "libggml-cpu-x64.so",
+      "size": 1007112,
+      "sha256": "8f0ab1dd0961873df5f6ad0b20465e587a6652186a6456d8b20fc5627bec63b3"
+    },
+    {
+      "file": "libggml-cpu-zen4.so",
+      "size": 1410504,
+      "sha256": "d2584598e7687a8c1776c66cecda079cf5efcb2f65b2d5fd6cebd2ac06186b8e"
+    },
+    {
+      "file": "libggml.so",
+      "size": 55960,
+      "sha256": "17c4490868a0839260437e89ddfc8de99cb340ea361d99ebe85400932ac12ec4"
+    },
+    {
+      "file": "libggml.so.0",
+      "size": 55960,
+      "sha256": "17c4490868a0839260437e89ddfc8de99cb340ea361d99ebe85400932ac12ec4"
+    },
+    {
+      "file": "libggml.so.0.27.0",
+      "size": 55960,
+      "sha256": "17c4490868a0839260437e89ddfc8de99cb340ea361d99ebe85400932ac12ec4"
+    },
+    {
+      "file": "libsharpyuv.so",
+      "size": 50608,
+      "sha256": "e3f4e7538dee717727cbbca87ad25630f079b012c5d9b0c37847978609c5a56e"
+    },
+    {
+      "file": "libsharpyuv.so.0",
+      "size": 50608,
+      "sha256": "e3f4e7538dee717727cbbca87ad25630f079b012c5d9b0c37847978609c5a56e"
+    },
+    {
+      "file": "libsharpyuv.so.0.1.2",
+      "size": 50608,
+      "sha256": "e3f4e7538dee717727cbbca87ad25630f079b012c5d9b0c37847978609c5a56e"
+    },
+    {
+      "file": "libstable-diffusion.so",
+      "size": 41790656,
+      "sha256": "f30189ea3fac93fc52e6d78ea9d00c3ed06d13df1e14e9eb100de7cf1d26ae56"
+    },
+    {
+      "file": "libwebm.so",
+      "size": 311864,
+      "sha256": "bf2debfb3ff6906547b5463c31470ac2a1aed22c1c40aa604259c8e277be4736"
+    },
+    {
+      "file": "libwebp.so",
+      "size": 796912,
+      "sha256": "3dfa1445eda8ed4b2ef4f5d4ec2cdfe6cb85bf7ed4ff929b370c8b0709244a14"
+    },
+    {
+      "file": "libwebp.so.7",
+      "size": 796912,
+      "sha256": "3dfa1445eda8ed4b2ef4f5d4ec2cdfe6cb85bf7ed4ff929b370c8b0709244a14"
+    },
+    {
+      "file": "libwebp.so.7.2.0",
+      "size": 796912,
+      "sha256": "3dfa1445eda8ed4b2ef4f5d4ec2cdfe6cb85bf7ed4ff929b370c8b0709244a14"
+    },
+    {
+      "file": "libwebpmux.so",
+      "size": 57336,
+      "sha256": "f34d2b09290a0d31c4c327c664042b6cfdff4de76980e6a569bb5428ed283684"
+    },
+    {
+      "file": "libwebpmux.so.3",
+      "size": 57336,
+      "sha256": "f34d2b09290a0d31c4c327c664042b6cfdff4de76980e6a569bb5428ed283684"
+    },
+    {
+      "file": "libwebpmux.so.3.1.2",
+      "size": 57336,
+      "sha256": "f34d2b09290a0d31c4c327c664042b6cfdff4de76980e6a569bb5428ed283684"
+    },
+    {
+      "file": "sd-cli",
+      "size": 1477928,
+      "sha256": "0e2cde51b7058ea77c95d8f09f3b87cad4299cf101c5cc68ea80cb818521f449"
+    },
+    {
+      "file": "sd-server",
+      "size": 2893880,
+      "sha256": "b9a5b6d0106867895d1389d648f0d903b41d942e9622a728ddfa5d456b90ca06"
+    },
+    {
+      "file": "stable-diffusion.cpp.txt",
+      "size": 1062,
+      "sha256": "b53fa08f515cb5a6fff7b9fd8fcd0961a4b80df29d74372d25e1f9171aa042ee"
+    },
+    {
+      "file": "start-server.bat",
+      "size": 1127,
+      "sha256": "5b30356ccffc41b74843a5136b545db8591eef1672e6b997b7e25399b6e45510"
+    },
+    {
+      "file": "start-server.sh",
+      "size": 1381,
+      "sha256": "3d409c246e2002a8028cac6ca8b67b87a6eab1a1ddcb93f5ebf62c0c92c6991f"
+    }
+  ]
+}

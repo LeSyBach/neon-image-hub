@@ -1,0 +1,23 @@
+# Standalone deployment for ONE remote worker. No server admin keys or DB.
+name: neon-worker
+services:
+  worker:
+    image: neon-hub-worker:local
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    restart: unless-stopped
+    environment:
+      AI_MODEL: ${AI_MODEL:-}
+    stop_grace_period: 35s
+    cpus: ${WORKER_CPUS:-6}
+    mem_limit: ${WORKER_MEMORY:-5g}
+    memswap_limit: ${WORKER_MEMORY:-5g}
+    volumes:
+      - ${WORKER_SETTINGS_FILE:-./worker-settings.json}:/config/worker.json:ro
+      - ${MODEL_DIRECTORY:-./models}:/models:ro
+      - ./worker-state:/state
+    logging:
+      options:
+        max-size: 5m
+        max-file: '2'

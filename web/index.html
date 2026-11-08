@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f6f7f9">
+  <meta name="description" content="Kho ảnh Neon. Tìm theo tên tiếng Anh và tạo thêm ảnh khi nội dung chưa có.">
+  <title>Kho ảnh Neon</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Đến nội dung</a>
+  <header class="site-header wrap">
+    <a href="/" class="brand" aria-label="Kho ảnh Neon, trang chủ">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="7"/><path d="M9 23V9l14 14V9"/></svg>
+      <span>Kho ảnh <strong>Neon</strong></span>
+    </a>
+    <span class="total"><span id="total-images">0</span> ảnh trong kho</span>
+  </header>
+  <main id="main" class="wrap">
+    <section class="intro" aria-labelledby="title">
+      <h1 id="title">Bạn muốn tìm hình gì?</h1>
+      <p>Nhập tên tiếng Anh. Ảnh chưa có sẽ được tạo thêm và lưu lại.</p>
+      <form id="search-form" role="search">
+        <label for="search-input">Tên ảnh bằng tiếng Anh</label>
+        <div class="search-row">
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
+            <input id="search-input" name="q" type="search" maxlength="100" placeholder="Ví dụ: black dog, red bicycle" autocomplete="off" aria-describedby="search-help search-error">
+          </div>
+          <button type="submit" id="search-button">Tìm ảnh</button>
+        </div>
+        <p id="search-help" class="help">Tìm theo tên; bạn không cần nhập mã AI hoặc đuôi file.</p>
+        <p id="search-error" class="error" role="alert" hidden></p>
+      </form>
+      <div class="suggestions" aria-label="Gợi ý tìm kiếm">
+        <span>Thử tìm</span>
+        <button type="button" data-search="black dog">black dog</button>
+        <button type="button" data-search="blue butterfly">blue butterfly</button>
+        <button type="button" data-search="red bicycle">red bicycle</button>
+      </div>
+    </section>
+    <section id="generation" class="generation" aria-label="Tiến độ tạo ảnh" hidden>
+      <div class="status-mark" aria-hidden="true"></div>
+      <div><h2 id="generation-title">Đang chuẩn bị ảnh</h2><p id="generation-text" role="status" aria-live="polite"></p></div>
+      <button type="button" id="retry" hidden>Thử lại</button>
+    </section>
+    <section class="collection" aria-labelledby="collection-title">
+      <div class="collection-head">
+        <div><h2 id="collection-title">Ảnh mới nhất</h2><p id="collection-count" class="muted" aria-live="polite">Đang tải kho ảnh…</p></div>
+        <button type="button" id="show-all" class="quiet" hidden>Xem toàn bộ kho</button>
+      </div>
+      <div id="gallery" class="gallery" aria-busy="true"></div>
+      <div id="empty" class="empty" hidden>
+        <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="9" y="11" width="46" height="42" rx="5"/><circle cx="24" cy="25" r="5"/><path d="m11 46 14-13 10 9 8-7 10 10"/></svg>
+        <h3 id="empty-title">Kho ảnh đang chờ những hình đầu tiên</h3>
+        <p id="empty-text">Tìm một nội dung bằng tiếng Anh để bắt đầu.</p>
+      </div>
+      <nav id="pagination" class="pagination" aria-label="Chuyển trang ảnh" hidden>
+        <button type="button" id="previous" class="quiet">Trang trước</button>
+        <span id="page-number" aria-live="polite">Trang 1</span>
+        <button type="button" id="next" class="quiet">Trang sau</button>
+      </nav>
+    </section>
+    <section class="ai-summary" aria-labelledby="ai-title">
+      <div><h2 id="ai-title">Ảnh theo từng AI</h2><p class="muted">Số ảnh đã lưu thành công trong kho.</p></div>
+      <ul id="ai-counts" aria-live="polite"></ul>
+    </section>
+  </main>
+  <footer class="wrap footer"><span>Kho ảnh Neon</span><span>Ảnh mới được bổ sung tự động</span></footer>
+  <dialog id="image-dialog" aria-labelledby="image-title">
+    <button id="close-dialog" class="dialog-close quiet" type="button" aria-label="Đóng ảnh">Đóng</button>
+    <img id="large-image" alt="">
+    <div class="dialog-info"><h2 id="image-title"></h2><p id="image-detail" class="muted"></p><a id="download-image" class="download" download>Tải ảnh</a></div>
+  </dialog>
+  <template id="image-card">
+    <article class="image-card"><button type="button" class="image-open"><img loading="lazy" decoding="async" width="512" height="512"><span class="image-caption"><strong></strong><span></span></span></button></article>
+  </template>
+</body>
+</html>

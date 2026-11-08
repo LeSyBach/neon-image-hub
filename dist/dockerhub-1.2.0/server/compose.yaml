@@ -1,0 +1,106 @@
+name: neon-hub
+x-api: &api
+  image: bachcp10/neon-hub-api:1.2.0
+  restart: unless-stopped
+  env_file: .env
+  environment:
+    DATA_DIR: /data
+    WORKER_CONFIG: /config/workers.json
+    NTFY_URL: http://ntfy:80
+  volumes:
+    - ./data/hub:/data
+    - ./.credentials/workers.json:/config/workers.json:ro
+  logging:
+    driver: json-file
+    options:
+      max-size: 5m
+      max-file: '2'
+services:
+  api:
+    <<: *api
+    ports:
+      - '${WORKER_BIND:-127.0.0.1}:${WORKER_PORT:-8081}:8000'
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      start_period: 10s
+      retries: 4
+  scheduler:
+    <<: *api
+    command: [python, -m, server.scheduler]
+    depends_on:
+      api:
+        condition: service_healthy
+      ntfy:
+        condition: service_started
+    healthcheck:
+      test: [CMD, python, -c, "from pathlib import Path; import time; assert time.time()-Path('/data/scheduler-heartbeat').stat().st_mtime < 45"]
+      interval: 20s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+  web:
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - '${WEB_BIND:-127.0.0.1}:${WEB_PORT:-8080}:80'
+    volumes:
+      - ./web:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    logging:
+      options:
+        max-size: 5m
+        max-file: '2'
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    command: [serve]
+    restart: unless-stopped
+    environment:
+      NTFY_LISTEN_HTTP: ':80'
+      NTFY_BASE_URL: '${NTFY_BASE_URL:-http://localhost:8091}'
+      NTFY_CACHE_FILE: /var/cache/ntfy/cache.db
+      NTFY_AUTH_FILE: /var/cache/ntfy/auth.db
+      NTFY_AUTH_DEFAULT_ACCESS: deny-all
+      NTFY_CACHE_DURATION: 168h
+    volumes:
+      - ./data/ntfy:/var/cache/ntfy
+    ports:
+      - '${NTFY_BIND:-127.0.0.1}:${NTFY_PORT:-8091}:80'
+    logging:
+      options:
+        max-size: 5m
+        max-file: '2'
+  beszel:
+    image: henrygd/beszel:0.21.1
+    restart: unless-stopped
+    environment:
+      APP_URL: '${BESZEL_URL:-http://localhost:8090}'
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - ./data/beszel:/beszel_data
+    ports:
+      - '${MONITOR_BIND:-127.0.0.1}:${MONITOR_PORT:-8090}:8090'
+    logging:
+      options:
+        max-size: 5m
+        max-file: '2'
+  beszel-agent:
+    image: henrygd/beszel-agent:0.21.1
+    profiles: [monitor-agent]
+    restart: unless-stopped
+    network_mode: host
+    env_file:
+      - path: .credentials/beszel-agent.env
+        required: false
+    volumes:
+      - ./data/beszel-agent:/var/lib/beszel-agent
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    logging:
+      options:
+        max-size: 5m
+        max-file: '2'

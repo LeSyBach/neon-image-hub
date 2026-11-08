@@ -1,0 +1,24 @@
+# For verification on this computer only. This is ONE worker, not three VMs.
+services:
+  worker-local:
+    image: neon-hub-worker:local
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    profiles: [local-worker]
+    restart: unless-stopped
+    stop_grace_period: 35s
+    depends_on:
+      api:
+        condition: service_healthy
+    cpus: 6
+    mem_limit: 5g
+    memswap_limit: 5g
+    volumes:
+      - ./.credentials/worker-local.json:/config/worker.json:ro
+      - ${NEON_MODELS_DIR:-/mnt/d/codex-neon-local/models}:/models:ro
+      - ./data/worker-2.1:/state
+    logging:
+      options:
+        max-size: 5m
+        max-file: '2'

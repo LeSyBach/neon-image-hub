@@ -1,0 +1,19 @@
+{
+  "worker_id": "CHANGE_WORKER_ID",
+  "server_url": "http://CHANGE_SERVER_IP:8081",
+  "state_dir": "/state",
+  "threads": 6,
+  "generation_timeout": 900,
+  "minimum_free_bytes": 1073741824,
+  "models": {
+    "sd-turbo": {
+      "path": "/models/sd_turbo-f16-q8_0.gguf",
+      "taesd": "/models/taesd.safetensors",
+      "steps": 4,
+      "size": 512,
+      "clip_skip": 1,
+      "cfg": 1,
+      "sampler": "euler"
+    }
+  }
+}

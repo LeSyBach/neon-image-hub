@@ -1,0 +1,20 @@
+{
+  "sd-turbo": {
+    "path": "/models/sd_turbo-f16-q8_0.gguf",
+    "taesd": "/models/taesd.safetensors",
+    "steps": 4,
+    "size": 512,
+    "clip_skip": 1,
+    "cfg": 1,
+    "sampler": "euler"
+  },
+  "dreamshaper-8-lcm": {
+    "path": "/models/DreamShaper8_LCM.safetensors",
+    "taesd": "/models/taesd.safetensors",
+    "steps": 6,
+    "size": 512,
+    "clip_skip": 1,
+    "cfg": 1,
+    "sampler": "lcm"
+  }
+}
