@@ -76,15 +76,10 @@ curl -fsSL https://tailscale.com/install.sh -o /tmp/neon-install-tailscale.sh
 sudo sh /tmp/neon-install-tailscale.sh
 ```
 
-Nếu VM chưa vào tailnet của nhóm, chạy khối lệnh sau. Khi terminal hỏi, dán auth key do quản trị viên cấp riêng rồi nhấn Enter. Key được nhập ẩn.
+Nếu VM chưa vào tailnet của nhóm, thay `DAN_AUTH_KEY_VAO_DAY` bằng key do quản trị viên cấp rồi chạy lệnh sau trên VM worker.
 
 ```bash
-(
-  IFS= read -rsp 'Dán auth key Tailscale rồi nhấn Enter: ' NEON_TAILSCALE_AUTH_KEY || exit 1
-  printf '\n'
-  [ -n "$NEON_TAILSCALE_AUTH_KEY" ] || exit 1
-  printf '%s' "$NEON_TAILSCALE_AUTH_KEY" | sudo tailscale up --auth-key=file:/dev/stdin
-)
+sudo tailscale up --authkey='DAN_AUTH_KEY_VAO_DAY'
 ```
 
 Nếu VM đã vào đúng tailnet của nhóm, bỏ qua bước đăng nhập.
@@ -102,7 +97,7 @@ ip -br -4 address
   IP NAT này dùng khi chép file từ Windows của chính thành viên vào VM bằng SSH/SCP.
 - Không lấy địa chỉ `127.0.0.1` hay `docker0` làm IP server cho các worker khác.
 
-Xem [cài Tailscale trên Linux](https://tailscale.com/docs/install/linux) và [nhập auth key Tailscale](https://tailscale.com/docs/features/access-control/auth-keys/how-to/secure-auth-keys).
+Xem [cài Tailscale trên Linux](https://tailscale.com/docs/install/linux) và [nhập auth key Tailscale](https://tailscale.com/docs/features/access-control/auth-keys#register-a-node-with-the-auth-key).
 
 ## 4. Nhận ID và địa chỉ server
 

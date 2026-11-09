@@ -405,15 +405,10 @@ curl -fsSL https://tailscale.com/install.sh -o /tmp/neon-tailscale-install.sh
 sh /tmp/neon-tailscale-install.sh
 ```
 
-Nếu VM chưa vào tailnet của nhóm, chạy khối lệnh sau. Khi terminal hỏi, dán auth key do quản trị viên cấp riêng rồi nhấn Enter. Key được nhập ẩn.
+Nếu VM chưa vào tailnet của nhóm, thay `DAN_AUTH_KEY_VAO_DAY` bằng key do quản trị viên cấp rồi chạy lệnh sau trên VM worker.
 
 ```bash
-(
-  IFS= read -rsp 'Dán auth key Tailscale rồi nhấn Enter: ' NEON_TAILSCALE_AUTH_KEY || exit 1
-  printf '\n'
-  [ -n "$NEON_TAILSCALE_AUTH_KEY" ] || exit 1
-  printf '%s' "$NEON_TAILSCALE_AUTH_KEY" | sudo tailscale up --auth-key=file:/dev/stdin
-)
+sudo tailscale up --authkey='DAN_AUTH_KEY_VAO_DAY'
 ```
 
 Nếu VM đã vào đúng tailnet của nhóm, bỏ qua bước đăng nhập.
@@ -426,7 +421,7 @@ tailscale status
 ```
 
 Nếu đã cài Docker hoặc Tailscale, bỏ qua lệnh cài tương ứng.
-Nguồn: [Docker](https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script), [Cài Tailscale](https://tailscale.com/docs/install/linux), [nhập auth key Tailscale](https://tailscale.com/docs/features/access-control/auth-keys/how-to/secure-auth-keys).
+Nguồn: [Docker](https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script), [Cài Tailscale](https://tailscale.com/docs/install/linux), [nhập auth key Tailscale](https://tailscale.com/docs/features/access-control/auth-keys#register-a-node-with-the-auth-key).
 
 ## Giám sát VM
 
