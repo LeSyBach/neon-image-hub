@@ -21,7 +21,7 @@ script đó bật thêm server local để thử nghiệm. VM thành viên làm 
 - VM Ubuntu 22.04 x86_64. Cấu hình khởi điểm: 4 vCPU, 8 GB RAM.
 - Docker/Compose đã cài; Tailscale đã vào cùng mạng của nhóm. Nếu chưa có, làm phần **Cài công cụ** ở cuối tài liệu trước.
 - Server đã chạy bản **1.2.0**.
-- Hỏi người giữ server **IP Tailscale của server**. Không lấy IP của chính worker.
+- Server của nhóm dùng IP Tailscale **`100.127.223.79`**, cổng API **`8081`**.
 - Mỗi VM phải có IP Tailscale riêng; VM clone không được dùng chung danh tính với VM gốc.
 
 | Thành viên | ID phải dùng | Model mặc định |
@@ -45,14 +45,11 @@ cd ~/neon-worker
 docker pull bachcp10/neon-hub-worker:1.2.0
 ```
 
-Trong khối lệnh tiếp theo, **sửa đúng hai dòng đầu trước khi chạy**:
-
-- `WORKER_ID`: ID của thành viên trong bảng trên.
-- `SERVER_IP`: IP Tailscale thật mà người giữ server cung cấp. `100.101.102.10` dưới đây chỉ là ví dụ.
+Trong khối lệnh tiếp theo, **chỉ sửa `WORKER_ID`** theo bảng trên. `SERVER_IP` đã điền sẵn IP của server nhóm.
 
 ```bash
 WORKER_ID=2.1
-SERVER_IP=100.101.102.10
+SERVER_IP=100.127.223.79
 NEON_CPUS=$(nproc)
 if [ "$NEON_CPUS" -gt 4 ]; then NEON_CPUS=4; fi
 
@@ -149,11 +146,11 @@ docker compose up -d
 docker compose logs --tail 30 worker
 ```
 
-Kiểm tra kết nối trước: thay IP ví dụ bằng IP server thật rồi chạy:
+Chạy các lệnh sau để kiểm tra kết nối đến server của nhóm.
 
 ```bash
-curl -f http://100.101.102.10:8081/api/health
-curl -fsS http://100.101.102.10:8081/api/stats
+curl -f http://100.127.223.79:8081/api/health
+curl -fsS http://100.127.223.79:8081/api/stats
 ```
 
 Health cần có `"status":"ok"`. Trong JSON stats, đúng ID của bạn phải có `"status":"idle"`
@@ -203,7 +200,7 @@ Pull image không ghi đè chúng. Không sửa file code bên trong container �
 | Muốn đổi | Sửa ở đâu? | Ví dụ |
 |---|---|---|
 | ID worker | `worker-settings.json`: `worker_id` | `"2.1"`, `"2.2"`, `"1.1"` |
-| Địa chỉ server | `worker-settings.json`: `server_url` | `"http://100.101.102.10:8081"` |
+| Địa chỉ server | `worker-settings.json`: `server_url` | `"http://100.127.223.79:8081"` |
 | Model | `.env`: `AI_MODEL` | `sd-turbo` hoặc `dreamshaper-8-lcm` |
 | Giới hạn CPU | `.env`: `WORKER_CPUS` | `2`, `4`, `8` |
 | Số luồng tạo ảnh | `worker-settings.json`: `threads` | Số nguyên như `2`, `4`, `8` |
@@ -406,18 +403,30 @@ Cài Tailscale:
 ```bash
 curl -fsSL https://tailscale.com/install.sh -o /tmp/neon-tailscale-install.sh
 sh /tmp/neon-tailscale-install.sh
-tailscale up
 ```
 
-Mở URL đăng nhập được in ra và đưa VM vào cùng tailnet của nhóm. Kiểm tra:
+Nếu VM chưa vào tailnet của nhóm, chạy khối lệnh sau. Khi terminal hỏi, dán auth key do quản trị viên cấp riêng rồi nhấn Enter. Key được nhập ẩn.
+
+```bash
+(
+  IFS= read -rsp 'Dán auth key Tailscale rồi nhấn Enter: ' NEON_TAILSCALE_AUTH_KEY || exit 1
+  printf '\n'
+  [ -n "$NEON_TAILSCALE_AUTH_KEY" ] || exit 1
+  printf '%s' "$NEON_TAILSCALE_AUTH_KEY" | sudo tailscale up --auth-key=file:/dev/stdin
+)
+```
+
+Nếu VM đã vào đúng tailnet của nhóm, bỏ qua bước đăng nhập.
+
+Sau khi kết nối, kiểm tra bằng các lệnh sau.
 
 ```bash
 tailscale ip -4
 tailscale status
 ```
 
-Nếu Docker/Tailscale đã có thì bỏ qua phần cài, không cài đè.
-Nguồn: [Docker](https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script), [Tailscale](https://tailscale.com/docs/install/linux).
+Nếu đã cài Docker hoặc Tailscale, bỏ qua lệnh cài tương ứng.
+Nguồn: [Docker](https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script), [Cài Tailscale](https://tailscale.com/docs/install/linux), [nhập auth key Tailscale](https://tailscale.com/docs/features/access-control/auth-keys/how-to/secure-auth-keys).
 
 ## Giám sát VM
 

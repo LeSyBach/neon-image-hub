@@ -74,13 +74,20 @@ Trong **Ubuntu VM**:
 ```bash
 curl -fsSL https://tailscale.com/install.sh -o /tmp/neon-install-tailscale.sh
 sudo sh /tmp/neon-install-tailscale.sh
-sudo tailscale up
 ```
 
-Mở URL đăng nhập mà lệnh hiển thị trên trình duyệt Windows. Đưa VM vào **cùng tailnet của nhóm**.
-Nếu thành viên dùng tài khoản riêng, quản trị viên cần mời họ vào tailnet chung.
-Không đăng nhập bốn tài khoản vào bốn tailnet tách biệt.
-Nếu đăng nhập bằng auth key, dùng khóa mới được cấp riêng; không dùng lại khóa đã lộ trong chat.
+Nếu VM chưa vào tailnet của nhóm, chạy khối lệnh sau. Khi terminal hỏi, dán auth key do quản trị viên cấp riêng rồi nhấn Enter. Key được nhập ẩn.
+
+```bash
+(
+  IFS= read -rsp 'Dán auth key Tailscale rồi nhấn Enter: ' NEON_TAILSCALE_AUTH_KEY || exit 1
+  printf '\n'
+  [ -n "$NEON_TAILSCALE_AUTH_KEY" ] || exit 1
+  printf '%s' "$NEON_TAILSCALE_AUTH_KEY" | sudo tailscale up --auth-key=file:/dev/stdin
+)
+```
+
+Nếu VM đã vào đúng tailnet của nhóm, bỏ qua bước đăng nhập.
 
 Sau khi xác nhận, chạy trong **Ubuntu VM**:
 
@@ -95,13 +102,13 @@ ip -br -4 address
   IP NAT này dùng khi chép file từ Windows của chính thành viên vào VM bằng SSH/SCP.
 - Không lấy địa chỉ `127.0.0.1` hay `docker0` làm IP server cho các worker khác.
 
-Nguồn: [Cài Tailscale trên Linux](https://tailscale.com/docs/install/linux).
+Xem [cài Tailscale trên Linux](https://tailscale.com/docs/install/linux) và [nhập auth key Tailscale](https://tailscale.com/docs/features/access-control/auth-keys/how-to/secure-auth-keys).
 
 ## 4. Nhận ID và địa chỉ server
 
 Từ bản 1.2.0, không cần token worker, không cần ZIP cấu hình hoặc mã nguồn.
-Quản trị server chỉ cung cấp ID (2.1, 3.1 hoặc 4.1) và địa chỉ API
-http://IP-TAILSCALE-SERVER:8081. Server phải được cập nhật 1.2.0 trước.
+Nhận ID của bạn (2.1, 3.1 hoặc 4.1) từ quản trị viên. Địa chỉ API của nhóm là
+`http://100.127.223.79:8081`. Server phải được cập nhật 1.2.0 trước.
 Hai máy không dùng chung một ID. ID 3.1 mặc định DreamShaper; 2.1/4.1 mặc định SD-Turbo.
 
 ## 5. Tải image và tạo cấu hình trên VM worker
@@ -114,12 +121,12 @@ cd ~/neon-worker
 sudo docker pull bachcp10/neon-hub-worker:1.2.0
 ```
 
-Đặt hai giá trị dưới đây đúng với máy bạn. Ví dụ ID 2.1; thành viên 3/4 thay thành 3.1/4.1.
-Thay IP_TAILSCALE_SERVER bằng IP thật của server trước khi chạy:
+Chỉ sửa `WORKER_ID` cho đúng với máy bạn. Ví dụ dùng ID 2.1, thành viên 3 hoặc 4 đổi thành 3.1 hoặc 4.1.
+`SERVER_URL` đã điền sẵn địa chỉ của server nhóm.
 
 ```bash
 WORKER_ID=2.1
-SERVER_URL="http://IP_TAILSCALE_SERVER:8081"
+SERVER_URL="http://100.127.223.79:8081"
 NEON_CPUS=$(nproc)
 if [ "$NEON_CPUS" -gt 4 ]; then NEON_CPUS=4; fi
 sudo docker run --rm --network none \
@@ -273,11 +280,10 @@ printf '%s\n' "$SERVER_URL"
 curl -f "${SERVER_URL}/api/health"
 ```
 
-SERVER_URL cần có dạng `http://IP-TAILSCALE-THAT-CUA-SERVER:8081`; không còn CHANGE_SERVER_IP,
-không dùng localhost hay IP của chính worker. Curl cần trả `"status":"ok"`.
+Với server của nhóm, `SERVER_URL` phải là `http://100.127.223.79:8081` và curl cần trả `"status":"ok"`.
 
 Nếu không kết nối, kiểm tra `tailscale status`, cùng tailnet, server đang chạy và WORKER_BIND của server.
-IP có thể kiểm tra bằng `tailscale ping IP-TAILSCALE-THAT-CUA-SERVER` sau khi thay IP thật.
+Kiểm tra đường kết nối bằng `tailscale ping 100.127.223.79`.
 Mạng và chính sách Tailscale cần cho phép kết nối worker tới server cổng 8081.
 Không cần điền IP worker vào server để nhận việc.
 
@@ -371,11 +377,11 @@ nano agent.env
 ```dotenv
 KEY="DAN_PUBLIC_KEY_TU_HUB"
 TOKEN="DAN_TOKEN_TU_HUB"
-HUB_URL=http://IP_TAILSCALE_SERVER:8090
+HUB_URL=http://100.127.223.79:8090
 LISTEN=IP_TAILSCALE_CUA_VM_NAY:45876
 ```
 
-Thay tất cả chữ minh họa. `LISTEN` dùng IP của VM worker này; `HUB_URL` dùng IP server.
+Điền `KEY` và `TOKEN` do Hub cấp, rồi thay IP trong `LISTEN` bằng IP Tailscale của VM worker. `HUB_URL` đã điền sẵn.
 KEY cần toàn bộ public key như ssh-ed25519 và phần ký tự phía sau.
 Trong **Ubuntu VM worker**:
 
